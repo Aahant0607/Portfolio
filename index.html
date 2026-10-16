@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyber">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aahant Kumar | AI & Cloud Portfolio + Resume Builder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root[data-theme="cyber"] { --bg: #090d16; --card: #111827; --text: #f3f4f6; --muted: #9ca3af; --accent: #38bdf8; --border: #1f2937; --font: 'Inter', sans-serif; }
+    :root[data-theme="swiss"] { --bg: #fafafa; --card: #ffffff; --text: #111111; --muted: #52525b; --accent: #e11d48; --border: #e4e4e7; --font: 'Inter', sans-serif; }
+    :root[data-theme="terminal"] { --bg: #050805; --card: #0c140c; --text: #4ade80; --muted: #22c55e99; --accent: #22c55e; --border: #14532d; --font: 'JetBrains Mono', monospace; }
+    :root[data-theme="aurora"] { --bg: #0f0720; --card: #1a1033; --text: #f5f3ff; --muted: #c4b5fd; --accent: #c084fc; --border: #3b2369; --font: 'Inter', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); font-family: var(--font); transition: background 0.25s, color 0.25s; }
+    .surface { background-color: var(--card); border: 1px solid var(--border); }
+    .accent-text { color: var(--accent); }
+    .accent-bg { background-color: var(--accent); }
+    .muted-text { color: var(--muted); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-opacity-80 border-b border-gray-800/40 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="h-3 w-3 rounded-full accent-bg inline-block"></span>
+        <span id="navBrand" class="font-bold tracking-tight text-lg">AAHANT.DEV</span>
+        <span class="text-xs px-2 py-0.5 rounded surface muted-text mono">DTU '28</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="toggleSpotlight()" class="surface px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 hover:opacity-80">
+          <span>🔍 Spotlight</span>
+          <kbd class="text-xs px-1.5 py-0.5 rounded border border-current opacity-60 mono">⌘K</kbd>
+        </button>
+        <button onclick="toggleBuilder()" class="accent-bg text-black font-semibold px-3 py-1.5 rounded-lg text-sm hover:opacity-90">
+          📄 Build From Resume PDF
+        </button>
+        <select id="themeSelector" onchange="setTheme(this.value)" class="surface px-3 py-1.5 rounded-lg text-sm cursor-pointer outline-none">
+          <option value="cyber">🌌 Obsidian Cyber</option>
+          <option value="swiss">📐 Minimal Swiss</option>
+          <option value="terminal">💻 Terminal Hacker</option>
+          <option value="aurora">✨ Glass Aurora</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-16">
+    <!-- Hero -->
+    <section class="grid md:grid-cols-3 gap-8 items-center">
+      <div class="md:col-span-2 space-y-4">
+        <div id="heroLoc" class="inline-block px-3 py-1 rounded-full surface text-xs mono accent-text">New Delhi, India</div>
+        <h1 id="heroName" class="text-4xl md:text-6xl font-bold tracking-tight">Aahant Kumar</h1>
+        <p id="heroTagline" class="muted-text text-lg leading-relaxed">
+          B.Tech in Electronics & Communication at Delhi Technological University (DTU). Architecting multimodal deepfake detection, SAR-to-EO satellite translation models, and scalable cloud microservices.
+        </p>
+        <div class="flex flex-wrap gap-3 pt-2 text-sm mono">
+          <a id="heroEmail" href="mailto:royaahantbhardwaj@gmail.com" class="surface px-4 py-2 rounded-lg hover:opacity-80">✉️ royaahantbhardwaj@gmail.com</a>
+          <a id="heroPhone" href="tel:+918368830075" class="surface px-4 py-2 rounded-lg hover:opacity-80">📞 +91 83688-30075</a>
+          <button onclick="sharePortfolioUrl()" class="surface px-4 py-2 rounded-lg hover:opacity-80 accent-text">🔗 Copy Shareable Link</button>
+        </div>
+      </div>
+
+      <!-- Live Scraper Card -->
+      <div class="surface p-5 rounded-2xl space-y-4">
+        <div class="flex items-center justify-between border-b border-gray-700/30 pb-3">
+          <span class="text-xs font-semibold uppercase tracking-wider muted-text mono">Live Profile Scraper</span>
+          <span id="syncStatus" class="text-xs accent-text mono">● Ready</span>
+        </div>
+        <div class="flex gap-2">
+          <input id="ghInput" type="text" placeholder="GitHub username" class="surface w-1/2 px-2.5 py-1.5 rounded text-xs outline-none" />
+          <input id="lcInput" type="text" placeholder="LeetCode username" class="surface w-1/2 px-2.5 py-1.5 rounded text-xs outline-none" />
+        </div>
+        <button onclick="syncLiveProfiles()" class="w-full py-1.5 rounded text-xs font-semibold accent-bg text-black hover:opacity-90">
+          Sync GitHub & LeetCode
+        </button>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="p-3 rounded-xl border border-gray-700/30">
+            <div class="text-xs muted-text">GitHub Repos</div>
+            <div id="ghRepos" class="text-xl font-bold mono mt-1">24+</div>
+          </div>
+          <div class="p-3 rounded-xl border border-gray-700/30">
+            <div class="text-xs muted-text">LeetCode Solved</div>
+            <div id="lcSolved" class="text-xl font-bold mono mt-1">350+</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Scraped GitHub Repos -->
+    <section id="scrapedReposSection" class="space-y-4 hidden">
+      <h2 class="text-2xl font-bold tracking-tight"><span class="accent-text mono">★</span> Live Scraped GitHub Repositories</h2>
+      <div id="scrapedReposList" class="grid md:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="space-y-6">
+      <h2 class="text-2xl font-bold tracking-tight"><span class="accent-text mono">01.</span> Experience</h2>
+      <div id="experienceList" class="grid md:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="space-y-6">
+      <h2 class="text-2xl font-bold tracking-tight"><span class="accent-text mono">02.</span> Featured Projects</h2>
+      <div id="projectList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </section>
+
+    <!-- Skills & Education -->
+    <section id="skills" class="grid md:grid-cols-2 gap-8">
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold tracking-tight"><span class="accent-text mono">03.</span> Technical Arsenal</h2>
+        <div id="skillsList" class="space-y-3"></div>
+      </div>
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold tracking-tight"><span class="accent-text mono">04.</span> Education & Honours</h2>
+        <div id="eduList" class="surface p-5 rounded-xl space-y-3"></div>
+        <div class="surface p-5 rounded-xl space-y-2">
+          <div class="text-xs uppercase mono accent-text">Leadership & Awards</div>
+          <ul id="awardsList" class="text-sm space-y-2 muted-text list-disc pl-4"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Resume PDF Uploader & Scraper Modal -->
+  <div id="builderModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="surface w-full max-w-lg rounded-2xl p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-lg">Build Portfolio from Resume PDF</h3>
+        <button onclick="toggleBuilder()" class="text-xs muted-text px-2 py-1 rounded border border-gray-700">ESC</button>
+      </div>
+      <p class="text-xs muted-text">Upload any PDF resume. Hidden clickable GitHub, LeetCode, and LinkedIn links are automatically extracted and scraped.</p>
+      <input type="file" accept="application/pdf" onchange="handlePdfUpload(event)" class="w-full text-sm surface p-2 rounded-lg" />
+      <input id="geminiKeyInput" type="password" placeholder="Optional: Free Gemini API Key to auto-rewrite sections from PDF" class="w-full text-xs surface p-2.5 rounded-lg outline-none" />
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="sharePortfolioUrl()" class="surface px-4 py-2 rounded-lg text-xs font-semibold accent-text">Copy Shareable URL</button>
+        <button onclick="toggleBuilder()" class="accent-bg text-black px-4 py-2 rounded-lg text-xs font-semibold">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spotlight Modal (Cmd+K) -->
+  <div id="spotlightModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden items-start justify-center pt-24 px-4">
+    <div class="surface w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-gray-700/40 flex items-center gap-3">
+        <span class="accent-text">⚡</span>
+        <input id="spotlightInput" type="text" placeholder="Search projects, internships, GitHub repos, or themes..." class="w-full bg-transparent outline-none text-base" oninput="renderSpotlight(this.value)" />
+        <button onclick="toggleSpotlight()" class="text-xs muted-text px-2 py-1 rounded border border-gray-700">ESC</button>
+      </div>
+      <div id="spotlightResults" class="max-h-96 overflow-y-auto p-3 space-y-1"></div>
+    </div>
+  </div>
+
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  let portfolioData = {
+    name: "Aahant Kumar",
+    tagline: "B.Tech in Electronics & Communication at Delhi Technological University (DTU). Architecting multimodal deepfake detection, SAR-to-EO satellite translation models, and scalable cloud microservices.",
+    email: "royaahantbhardwaj@gmail.com",
+    phone: "+91 83688-30075",
+    location: "New Delhi, India",
+    experiences: [
+      { role: "Artificial Intelligence Intern", company: "Phiery Innovations", period: "Jun 2025 – May 2026", location: "Remote", highlight: "Architected RDBMS ETL pipelines in Python/SQL (-40% latency), expanded training corpus 3x with Selenium/BS4, and built predictive maintenance ML dashboards." },
+      { role: "AI/Tech Intern & President", company: "Tech Me Kid", period: "Jul 2025 – Aug 2025", location: "San Francisco (Remote)", highlight: "Led cross-functional team of 6 to deliver 3 AI EdTech prototypes in 6 weeks at 100% on-time delivery using GPT-4 & Gemini APIs." },
+      { role: "Associate Cloud Engineer Intern", company: "NTGEN Systems Security and Data Pvt Ltd", period: "May 2025 – Jul 2025", location: "Noida (On-Site)", highlight: "Orchestrated AWS cloud operations, VPCs, and AWS VPN Gateways for encrypted enterprise data transit." },
+      { role: "Finance & Stock Market Intern", company: "Visionwise", period: "Jan 2025 – Feb 2025", location: "Remote", highlight: "Built DCF and regression equity models across 15+ stocks and produced weekly quant intelligence reports." },
+      { role: "Space Tech Entrepreneur Intern", company: "India Space Lab", period: "Dec 2024 – Jan 2025", location: "New Delhi", highlight: "Engineered CubeSat/CanSat architectures, optimising RF link budgets for LEO deployment and Air Taxi drone telemetry." }
+    ],
+    projects: [
+      { title: "VedaAI – AI Educational Platform", stack: "Next.js, Node.js, MongoDB, BullMQ, Redis, Gemini", desc: "Automated assignment creation, grading, and bulk PDF evaluation using asynchronous Redis/BullMQ queues and Google Gemini." },
+      { title: "Reality Check – Deepfake Detection", stack: "PyTorch, RoBERTa, SigLIP, OpenCV, Streamlit", desc: "Cross-modal deepfake detector achieving >91% accuracy and 30 FPS real-time video inference (<2s latency)." },
+      { title: "CycleGAN SAR-to-EO Translation", stack: "PyTorch, CycleGAN, U-Net, EfficientNet-B4", desc: "Translated Sentinel-1 SAR to Sentinel-2 EO over 180K+ pairs (SSIM 0.74) & CloudSEN12 mIoU 0.81 (-35% GPU memory)." },
+      { title: "Explainable CV Chest X-Ray AI", stack: "PyTorch, EfficientNet-B4, DeiT, Grad-CAM", desc: "99.08% ensemble accuracy on 3-class COVID chest X-rays; proposed novel UWSA explainability method." },
+      { title: "AudioFanclub – Source Separation", stack: "librosa, GMM, Viterbi HMM, STFT, PCA", desc: "Forensic speaker diarisation with 32-component GMM, Viterbi HMM decoding, and STFT-mask audio separation." },
+      { title: "Python Error-Fixer Agent", stack: "FLAN-T5, Hugging Face, Gradio, NLP", desc: "Fine-tuned FLAN-T5 on QuixBugs for autonomous Python bug repair with 68% exact-match fix rate." }
+    ],
+    skills: [
+      { category: "Languages", items: "Python, C/C++, Java, TypeScript, JavaScript, C#, SQL, MATLAB" },
+      { category: "AI, ML & Vision", items: "PyTorch, TensorFlow, Diffusion/GANs, Gemini/GPT LLMs, ViT, OpenCV, Hugging Face" },
+      { category: "Cloud & DevOps", items: "AWS (Lambda, S3, EC2, VPC), Kubernetes, Docker, Redis, BullMQ, CI/CD, Linux" },
+      { category: "Full Stack & Signal Proc.", items: "Next.js, React, Node.js, WebSockets, DSP, STFT, MFCC, RF/PCB Design, Qiskit" }
+    ],
+    education: [
+      { school: "Delhi Technological University (DTU)", degree: "B.Tech in Electronics & Communication (2024–2028)", score: "7.55 CGPA" },
+      { school: "Delhi Public School, R.K. Puram", degree: "Class XII (CBSE, 2024)", score: "95.2%" },
+      { school: "Ahlcon Public School", degree: "Class X (CBSE, 2022)", score: "97.4%" }
+    ],
+    achievements: [
+      "Director of Corporate, Skillop DTU: Secured 5+ industry sponsors for a 200+ member society.",
+      "Investment Head, ASSETS DTU: Organised FinOHack with Paytm (3,000+ registrations) & 3 Fortune26 workshops.",
+      "MVPP Scholar: Secured General Rank 40 in Mukhyamantri Vigyan Pratibha Pariksha (formerly JSTSE).",
+      "Fellowships & Certifications: McKinsey Forward 2025, Summer of Quant (IIT Kharagpur), IIT Kanpur AI/Quantum."
+    ]
+  };
+
+  let scrapedRepos = [];
+
+  function renderAll() {
+    document.getElementById("navBrand").textContent = portfolioData.name.split(" ")[0].toUpperCase() + ".DEV";
+    document.getElementById("heroName").textContent = portfolioData.name;
+    document.getElementById("heroTagline").textContent = portfolioData.tagline;
+    document.getElementById("heroLoc").textContent = portfolioData.location;
+    document.getElementById("heroEmail").textContent = "✉️ " + portfolioData.email;
+    document.getElementById("heroEmail").href = "mailto:" + portfolioData.email;
+    document.getElementById("heroPhone").textContent = "📞 " + portfolioData.phone;
+
+    document.getElementById("experienceList").innerHTML = portfolioData.experiences.map(e => `
+      <div class="surface p-5 rounded-xl space-y-2">
+        <div class="flex justify-between items-start gap-2">
+          <div><h3 class="font-bold text-lg">${e.role}</h3><div class="accent-text text-sm font-medium">${e.company} • ${e.location}</div></div>
+          <span class="text-xs mono muted-text">${e.period}</span>
+        </div>
+        <p class="text-sm muted-text leading-relaxed">${e.highlight}</p>
+      </div>
+    `).join("");
+
+    document.getElementById("projectList").innerHTML = portfolioData.projects.map(p => `
+      <div class="surface p-5 rounded-xl flex flex-col justify-between space-y-3">
+        <div class="space-y-2"><h3 class="font-bold text-lg">${p.title}</h3><p class="text-sm muted-text leading-relaxed">${p.desc}</p></div>
+        <div class="pt-2 border-t border-gray-700/20 text-xs mono accent-text">${p.stack}</div>
+      </div>
+    `).join("");
+
+    document.getElementById("skillsList").innerHTML = portfolioData.skills.map(s => `
+      <div class="surface p-4 rounded-xl"><div class="text-xs uppercase mono accent-text mb-1">${s.category}</div><div class="text-sm font-medium">${s.items}</div></div>
+    `).join("");
+
+    document.getElementById("eduList").innerHTML = portfolioData.education.map((ed, i) => `
+      <div class="${i > 0 ? 'border-t border-gray-700/20 pt-2' : ''}">
+        <div class="font-bold">${ed.school}</div>
+        <div class="text-sm muted-text">${ed.degree} • <span class="accent-text font-semibold">${ed.score}</span></div>
+      </div>
+    `).join("");
+
+    document.getElementById("awardsList").innerHTML = portfolioData.achievements.map(a => `<li>${a}</li>`).join("");
+  }
+
+  function setTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    document.getElementById("themeSelector").value = t;
+  }
+
+  function toggleSpotlight() {
+    const m = document.getElementById("spotlightModal");
+    const show = m.classList.contains("hidden");
+    m.classList.toggle("hidden", !show);
+    m.classList.toggle("flex", show);
+    if (show) {
+      const inp = document.getElementById("spotlightInput");
+      inp.value = "";
+      inp.focus();
+      renderSpotlight("");
+    }
+  }
+
+  function toggleBuilder() {
+    const m = document.getElementById("builderModal");
+    const show = m.classList.contains("hidden");
+    m.classList.toggle("hidden", !show);
+    m.classList.toggle("flex", show);
+  }
+
+  function getSpotlightItems() {
+    return [
+      ...portfolioData.projects.map(p => ({ type: "Project", title: p.title, sub: p.stack, act: () => location.hash = "#projects" })),
+      ...portfolioData.experiences.map(e => ({ type: "Experience", title: e.role + " @ " + e.company, sub: e.period, act: () => location.hash = "#experience" })),
+      ...portfolioData.skills.map(s => ({ type: "Skills", title: s.category, sub: s.items, act: () => location.hash = "#skills" })),
+      ...scrapedRepos.map(r => ({ type: "GitHub Repo", title: r.name, sub: "⭐ " + r.stargazers_count + " • " + (r.language || "Code"), act: () => window.open(r.html_url, "_blank") })),
+      { type: "Palette", title: "Theme: Obsidian Cyber", sub: "Dark Neon", act: () => setTheme("cyber") },
+      { type: "Palette", title: "Theme: Minimal Swiss", sub: "Clean Light", act: () => setTheme("swiss") },
+      { type: "Palette", title: "Theme: Terminal Hacker", sub: "Matrix Green", act: () => setTheme("terminal") },
+      { type: "Palette", title: "Theme: Glass Aurora", sub: "Deep Violet", act: () => setTheme("aurora") }
+    ];
+  }
+
+  function renderSpotlight(q) {
+    const query = q.toLowerCase().trim();
+    const all = getSpotlightItems();
+    const matches = all.filter(i => i.title.toLowerCase().includes(query) || i.sub.toLowerCase().includes(query) || i.type.toLowerCase().includes(query));
+    window._currentSpotlightMatches = matches;
+    document.getElementById("spotlightResults").innerHTML = matches.map((m, idx) => `
+      <button onclick="window._currentSpotlightMatches[${idx}].act(); toggleSpotlight();" class="w-full text-left p-3 rounded-lg hover:bg-white/5 flex items-center justify-between">
+        <div><div class="font-medium text-sm">${m.title}</div><div class="text-xs muted-text">${m.sub}</div></div>
+        <span class="text-xs mono px-2 py-0.5 rounded surface accent-text">${m.type}</span>
+      </button>
+    `).join("");
+  }
+
+  async function syncLiveProfiles() {
+    const gh = document.getElementById("ghInput").value.trim();
+    const lc = document.getElementById("lcInput").value.trim();
+    const st = document.getElementById("syncStatus");
+    st.textContent = "⏳ Syncing...";
+
+    const [ghUserRes, ghRepoRes, lcRes] = await Promise.allSettled([
+      gh ? fetch(`https://api.github.com/users/${encodeURIComponent(gh)}`).then(r => r.json()) : Promise.resolve(null),
+      gh ? fetch(`https://api.github.com/users/${encodeURIComponent(gh)}/repos?sort=updated&per_page=6`).then(r => r.json()) : Promise.resolve([]),
+      lc ? fetch(`https://leetcode-stats-api.herokuapp.com/${encodeURIComponent(lc)}`).then(r => r.json()) : Promise.resolve(null)
+    ]);
+
+    if (ghUserRes.status === "fulfilled" && ghUserRes.value?.public_repos !== undefined) {
+      document.getElementById("ghRepos").textContent = ghUserRes.value.public_repos;
+    }
+    if (ghRepoRes.status === "fulfilled" && Array.isArray(ghRepoRes.value) && ghRepoRes.value.length > 0) {
+      scrapedRepos = ghRepoRes.value;
+      document.getElementById("scrapedReposSection").classList.remove("hidden");
+      document.getElementById("scrapedReposList").innerHTML = scrapedRepos.map(r => `
+        <a href="${r.html_url}" target="_blank" class="surface p-4 rounded-xl space-y-2 block hover:opacity-90">
+          <div class="flex justify-between items-center"><span class="font-bold accent-text">${r.name}</span><span class="text-xs mono muted-text">⭐ ${r.stargazers_count}</span></div>
+          <p class="text-xs muted-text">${r.description || "Open-source repository"}</p>
+          <div class="text-xs mono opacity-75">${r.language || "Code"}</div>
+        </a>
+      `).join("");
+    }
+    if (lcRes.status === "fulfilled" && lcRes.value?.totalSolved !== undefined) {
+      document.getElementById("lcSolved").textContent = lcRes.value.totalSolved;
+    }
+    st.textContent = "● Synced";
+  }
+
+  async function handlePdfUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const st = document.getElementById("syncStatus");
+    st.textContent = "⏳ Reading PDF...";
+
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let text = "";
+    let links = [];
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const tc = await page.getTextContent();
+      text += tc.items.map(it => it.str).join(" ") + "\n";
+      const anns = await page.getAnnotations();
+      anns.forEach(a => { if (a.url) links.push(a.url); });
+    }
+
+    const regexUrls = text.match(/https?:\/\/[^\s<>"']+/g) || [];
+    const allUrls = [...new Set([...links, ...regexUrls])];
+
+    for (const u of allUrls) {
+      const low = u.toLowerCase();
+      if (low.includes("github.com/")) document.getElementById("ghInput").value = u.replace(/\/+$/, "").split("/").pop();
+      if (low.includes("leetcode.com/")) {
+        const parts = u.replace(/\/+$/, "").split("/").filter(p => p && p !== "u");
+        document.getElementById("lcInput").value = parts.pop();
+      }
+    }
+
+    const geminiKey = document.getElementById("geminiKeyInput").value.trim();
+    if (geminiKey) {
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: "Parse this resume into strict JSON with keys: name, tagline, email, phone, location, experiences (array of {role, company, period, location, highlight}), projects (array of {title, stack, desc}), skills (array of {category, items}), education (array of {school, degree, score}), achievements (array of strings). Text: " + text }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+        const j = await r.json();
+        const parsed = JSON.parse(j.candidates[0].content.parts[0].text);
+        portfolioData = { ...portfolioData, ...parsed };
+        renderAll();
+      } catch (_) {}
+    }
+
+    await syncLiveProfiles();
+  }
+
+  function sharePortfolioUrl() {
+    const hash = btoa(unescape(encodeURIComponent(JSON.stringify(portfolioData))));
+    const url = location.origin + location.pathname + "#p=" + hash;
+    navigator.clipboard.writeText(url);
+    document.getElementById("syncStatus").textContent = "🔗 Link Copied!";
+  }
+
+  window.addEventListener("keydown", e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); toggleSpotlight(); }
+    if (e.key === "Escape") {
+      document.getElementById("spotlightModal").classList.add("hidden");
+      document.getElementById("builderModal").classList.add("hidden");
+    }
+  });
+
+  if (location.hash.startsWith("#p=")) {
+    try { portfolioData = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3))))); } catch (_) {}
+  }
+  renderAll();
+</script>
+</body>
+</html>
